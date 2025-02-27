@@ -158,39 +158,85 @@ public class MovieCollection {
 
     //----------------------------------------------------------------------------------------------------------------------
 //upload data through textfile
-
-    //•	Text file(show example how to set textfile for error)
-    //o	Title (letters are over the limit, number passed, special passed)
-    //o	Release year (letters passed, numbers failed, special passed)
-    //o	Genre(letters failed, numbers failed, special failed)
-    //o	Director(letters failed, numbers passed, special failed)
-    //o	Rating(letters passed, numbers failed, special passed)
-    //o	Watched status(letters failed, numbers failed, special failed)( it all turned to false for some reason)
     public void addMoviesFromFile(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(","); // Assuming CSV format: Title,Year,Genre,Director,Rating,Watched
-                if (parts.length == 6) {
-                    String title = parts[0].trim();
-                    int year = Integer.parseInt(parts[1].trim());
-                    String genre = parts[2].trim();
-                    String director = parts[3].trim();
-                    float rating = Float.parseFloat(parts[4].trim());
-                    boolean watched = Boolean.parseBoolean(parts[5].trim());
 
-                    addMovie(new Movie(title, year, genre, director, rating, watched));
-                    System.out.println("Added movie: " + title);
-                } else {
-                    System.out.println("Skipping invalid line: " + line);
+                if (parts.length != 6) {
+                    System.out.println("Skipping invalid line (wrong number of fields): " + line);
+                    continue;
                 }
+
+                String title = parts[0].trim();
+                String yearStr = parts[1].trim();
+                String genre = parts[2].trim();
+                String director = parts[3].trim();
+                String ratingStr = parts[4].trim();
+                String watchedStr = parts[5].trim();
+
+                // Validate title length
+                if (title.length() < 1 || title.length() > 45) {
+                    System.out.println("Skipping invalid movie (title length out of bounds): " + line);
+                    continue;
+                }
+
+                // Validate year
+                int year;
+                try {
+                    year = Integer.parseInt(yearStr);
+                    if (year < 1900 || year > 2025) {
+                        System.out.println("Skipping invalid movie (year out of range): " + line);
+                        continue;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Skipping invalid movie (invalid year format): " + line);
+                    continue;
+                }
+
+                // Validate genre (only letters and spaces, 3-20 characters)
+                if (!genre.matches("^[a-zA-Z ]+$") || genre.length() < 3 || genre.length() > 20) {
+                    System.out.println("Skipping invalid movie (invalid genre): " + line);
+                    continue;
+                }
+
+                // Validate director (only letters and spaces, 2-25 characters)
+                if (!director.matches("^[a-zA-Z ]+$") || director.length() < 2 || director.length() > 25) {
+                    System.out.println("Skipping invalid movie (invalid director name): " + line);
+                    continue;
+                }
+
+                // Validate rating
+                float rating;
+                try {
+                    rating = Float.parseFloat(ratingStr);
+                    if (rating < 0 || rating > 100) {
+                        System.out.println("Skipping invalid movie (rating out of range): " + line);
+                        continue;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Skipping invalid movie (invalid rating format): " + line);
+                    continue;
+                }
+
+                // Validate watched status (must be 'true' or 'false')
+                if (!watchedStr.equalsIgnoreCase("true") && !watchedStr.equalsIgnoreCase("false")) {
+                    System.out.println("Skipping invalid movie (invalid watched status): " + line);
+                    continue;
+                }
+
+                boolean watched = Boolean.parseBoolean(watchedStr);
+
+                // Add movie to collection
+                addMovie(new Movie(title, year, genre, director, rating, watched));
+                System.out.println("Added movie: " + title);
             }
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
-        } catch (NumberFormatException e) {
-            System.out.println("Error parsing movie data. Please ensure file format is correct.");
         }
     }
+
 
     //----------------------------------------------------------------------------------------------------------------------
 //Menu
