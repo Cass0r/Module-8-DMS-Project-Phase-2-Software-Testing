@@ -48,40 +48,71 @@ public class MovieCollection {
 
         switch (field.toLowerCase()) {
             case "title":
-                // If updating title, we must also check if the new title already exists
                 if (movies.containsKey(newValue)) {
-                    System.out.println("Error: Movie with this title already exists.");
+                    System.out.println("Error: A movie with this title already exists.");
+                    return false;
+                }
+                if (newValue.length() < 1 || newValue.length() > 45) {
+                    System.out.println("Error: Title must be between 1 and 45 characters.");
                     return false;
                 }
                 movie.setTitle(newValue);
                 movies.put(newValue, movie);
-                movies.remove(title); // Remove old title
+                movies.remove(title); // Remove old title reference
                 break;
+
             case "releaseyear":
-                int newYear = Integer.parseInt(newValue);
-                if (newYear < 1900 || newYear > 2025) {
-                    System.out.println("Error: The release year must be between 1900 and 2025.");
+                try {
+                    int newYear = Integer.parseInt(newValue);
+                    if (newYear < 1900 || newYear > 2025) {
+                        System.out.println("Error: The release year must be between 1900 and 2025.");
+                        return false;
+                    }
+                    movie.setRelease_Year(newYear);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid release year. Please enter a valid number.");
                     return false;
                 }
-                movie.setRelease_Year(newYear);
                 break;
+
             case "genre":
+                if (!newValue.matches("^[a-zA-Z ]+$") || newValue.length() < 3 || newValue.length() > 20) {
+                    System.out.println("Error: Genre must contain only letters and be 3-20 characters long.");
+                    return false;
+                }
                 movie.setGenre(newValue);
                 break;
+
             case "director":
-                movie.setDirector(newValue);
-                break;
-            case "rating":
-                float newRating = Float.parseFloat(newValue);
-                if (newRating < 0 || newRating > 100) {
-                    System.out.println("Error: The rating must be between 0 and 100.");
+                while (!newValue.matches("^[a-zA-Z ]+$") || newValue.length() < 2 || newValue.length() > 25) {
+                    System.out.println("Error: Director name must contain only letters and be 2-25 characters long.");
                     return false;
                 }
-                movie.setRating(newRating);
+                movie.setDirector(newValue);
                 break;
+
+            case "rating":
+                try {
+                    float newRating = Float.parseFloat(newValue);
+                    if (newRating < 0 || newRating > 100) {
+                        System.out.println("Error: The rating must be between 0 and 100.");
+                        return false;
+                    }
+                    movie.setRating(newRating);
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid rating. Please enter a valid number.");
+                    return false;
+                }
+                break;
+
             case "watchedstatus":
+                if (!newValue.equalsIgnoreCase("true") && !newValue.equalsIgnoreCase("false")) {
+                    System.out.println("Error: Watched status must be 'true' or 'false'.");
+                    return false;
+                }
                 movie.setWatched_Status(Boolean.parseBoolean(newValue));
                 break;
+
             default:
                 System.out.println("Error: Invalid field.");
                 return false;
@@ -90,6 +121,7 @@ public class MovieCollection {
         System.out.println("Movie updated successfully.");
         return true;
     }
+
 
 
     //----------------------------------------------------------------------------------------------------------------------
