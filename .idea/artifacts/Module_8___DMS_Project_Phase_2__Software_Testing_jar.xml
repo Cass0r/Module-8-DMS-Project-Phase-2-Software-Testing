@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Module 8 - DMS Project Phase 2- Software Testing:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Module_8___DMS_Project_Phase_2__Software_Testing_jar</output-path>
+    <root id="archive" name="Module 8 - DMS Project Phase 2- Software Testing.jar">
+      <element id="module-output" name="Module 8 - DMS Project Phase 2- Software Testing" />
+    </root>
+  </artifact>
+</component>

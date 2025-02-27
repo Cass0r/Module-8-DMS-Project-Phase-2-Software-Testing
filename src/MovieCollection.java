@@ -126,6 +126,14 @@ public class MovieCollection {
 
     //----------------------------------------------------------------------------------------------------------------------
 //upload data through textfile
+
+    //•	Text file(show example how to set textfile for error)
+    //o	Title (letters are over the limit, number passed, special passed)
+    //o	Release year (letters passed, numbers failed, special passed)
+    //o	Genre(letters failed, numbers failed, special failed)
+    //o	Director(letters failed, numbers passed, special failed)
+    //o	Rating(letters passed, numbers failed, special passed)
+    //o	Watched status(letters failed, numbers failed, special failed)( it all turned to false for some reason)
     public void addMoviesFromFile(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -156,6 +164,7 @@ public class MovieCollection {
 //Menu
 //This method displays a menu that allows the user to interact with the system.
     public void Movie_Menu () {
+        //Menu test: letters failed, numbers passed, special failed)
         Scanner sc = new Scanner(System.in);
         int Option;
 
@@ -168,8 +177,25 @@ public class MovieCollection {
             System.out.println("5. Calculate Average Movie Rating");
             System.out.println("6. Exit Menu");
             System.out.print("Enter your option by the number associated: ");
+            // Option = sc.nextInt();
+            // System.out.print("\n");
+
+
+
+            //Will be used to validate user input for the menu
+            while (!sc.hasNextInt()) {
+                System.out.println("\nInvalid input. Please enter a number between 1 and 6.");
+                sc.next(); // Clear the invalid input
+                System.out.print("Enter your option: ");
+            }
             Option = sc.nextInt();
             System.out.print("\n");
+
+
+
+
+
+
 
 //Using the switch for the menu so user can enter the option they choose by using the number associated in  the print
 // above.
@@ -178,17 +204,32 @@ public class MovieCollection {
                 //Adding movie
                 case 1:
                     //add the switch option for add movie manually or by text file
+                    //Asking for manual  or text file option(letters failed, numbers failed, special failed)
                     System.out.println("How would you like to add the Movie");
                     System.out.println("1. Textfile (Please place textfile in (C:) for data retrival.");
                     System.out.println("2. Manually");
                     System.out.print("Enter Option Here:");
-                    int option2 = sc.nextInt();
+                    int option2 ;//= sc.nextInt();
+
+
+                    //Reuse the same user validation from earlier
+                    while (!sc.hasNextInt()) {
+                        System.out.println("\nInvalid input. Please enter a number between 1 and 2.");
+                        sc.next(); // Clear the invalid input
+                        System.out.print("Enter your option: ");
+                    }
+                    option2 = sc.nextInt();
+                    System.out.print("\n");
+
+
+
 
 
                     switch (option2) {
 
                         //textfile option
                         case 1:
+                            //•	Never hardcode the file path the user must enter for the text file.  Always let the user enter the complete path.
                             String filePath = "C:\\movies.txt";
                             addMoviesFromFile(filePath);
                             break;
@@ -256,6 +297,7 @@ public class MovieCollection {
                             } while (!validGenre);
 
 //keep up from 2 to 25 characters make sure to allow re-entry
+                            //o	Director(letters passed, numbers failed, specials failed)
                             // no special letters for name
                             System.out.print("Enter director: ");
                             String director = sc.nextLine();
@@ -273,6 +315,10 @@ public class MovieCollection {
                                 System.out.print("Enter director: ");
                                 director = sc.nextLine();
                             }
+
+
+
+
 
 //keep rating from 0 to 100 make sure to allow re-entry
                             float rating = -1; // Initialize with an invalid value
