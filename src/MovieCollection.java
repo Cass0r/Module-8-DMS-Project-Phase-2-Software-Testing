@@ -122,8 +122,6 @@ public class MovieCollection {
         return true;
     }
 
-
-
     //----------------------------------------------------------------------------------------------------------------------
 //getMovie():List<Movie>
     public void Display_MovieCollection(){
@@ -156,7 +154,7 @@ public class MovieCollection {
         return Float.parseFloat(formattedAverage);
     }
 
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //upload data through textfile
     public void addMoviesFromFile(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -236,9 +234,7 @@ public class MovieCollection {
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
-
-
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //Menu
 //This method displays a menu that allows the user to interact with the system.
     public void Movie_Menu () {
@@ -258,8 +254,6 @@ public class MovieCollection {
             // Option = sc.nextInt();
             // System.out.print("\n");
 
-
-
             //Will be used to validate user input for the menu
             while (!sc.hasNextInt()) {
                 System.out.println("\nInvalid input. Please enter a number between 1 and 6.");
@@ -268,12 +262,6 @@ public class MovieCollection {
             }
             Option = sc.nextInt();
             System.out.print("\n");
-
-
-
-
-
-
 
 //Using the switch for the menu so user can enter the option they choose by using the number associated in  the print
 // above.
@@ -289,7 +277,6 @@ public class MovieCollection {
                     System.out.print("Enter Option Here:");
                     int option2 ;//= sc.nextInt();
 
-
                     //Reuse the same user validation from earlier
                     while (!sc.hasNextInt()) {
                         System.out.println("\nInvalid input. Please enter a number between 1 and 2.");
@@ -299,22 +286,29 @@ public class MovieCollection {
                     option2 = sc.nextInt();
                     System.out.print("\n");
 
-
-
-
-
                     switch (option2) {
 
                         //textfile option
                         case 1:
                             //•	Never hardcode the file path the user must enter for the text file.  Always let the user enter the complete path.
-                            String filePath = "C:\\movies.txt";
+                            System.out.print("Enter the full file path for the movies text file: ");
+                            sc.nextLine();
+                            String filePath = sc.nextLine();
+
+                            // Validate that the input is not empty
+                            while (filePath.trim().isEmpty()) {
+                                System.out.println("Error: File path cannot be empty. Please enter a valid path.");
+                                System.out.print("Enter the full file path for the movies text file: ");
+                                filePath = sc.nextLine();
+                            }
+
                             addMoviesFromFile(filePath);
                             break;
 
                         //manually
                         case 2:
-//keep movie titles under 45 letters or no characters make sure to allow re-entry
+//keep movie titles under 45 letters or no charString filePath = "C:\\movies.txt";
+//                            addMoviesFromFile(filePath);acters make sure to allow re-entry
                             System.out.print("Enter Movie Title: ");
                             sc.nextLine();
                             String title = sc.nextLine();
@@ -393,10 +387,6 @@ public class MovieCollection {
                                 System.out.print("Enter director: ");
                                 director = sc.nextLine();
                             }
-
-
-
-
 
 //keep rating from 0 to 100 make sure to allow re-entry
                             float rating = -1; // Initialize with an invalid value
