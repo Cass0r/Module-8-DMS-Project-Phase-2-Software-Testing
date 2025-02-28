@@ -16,7 +16,7 @@ public class MovieCollection {
     public MovieCollection(){
         movies = new HashMap<>();
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
 //addMovie(movie: Movie): boolean
     public  boolean addMovie(Movie movie){
         if (movies.containsKey(movie.getTitle())) {
@@ -26,7 +26,7 @@ public class MovieCollection {
         movies.put(movie.getTitle(), movie);
         return true;
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
 //removeMovie(title: String) boolean
     //leave message for movie that was removed
     public boolean removeMovie(String title) {
@@ -37,7 +37,7 @@ public class MovieCollection {
         System.out.println("Movie has been found and removed.");
         return true;
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
 //updateMovie(movie :Movie) boolean
     public boolean updateMovie(String title, String field, String newValue) {
         Movie movie = movies.get(title);
@@ -45,7 +45,8 @@ public class MovieCollection {
             System.out.println("Error: Movie not found.");
             return false;
         }
-
+//Depending on each attribute the rest of the attributes will have constraints to deal with error handing for wrong
+//input, much of the same constraints here will be used for the update method as well as the menu method
         switch (field.toLowerCase()) {
             case "title":
                 if (movies.containsKey(newValue)) {
@@ -58,9 +59,10 @@ public class MovieCollection {
                 }
                 movie.setTitle(newValue);
                 movies.put(newValue, movie);
-                movies.remove(title); // Remove old title reference
+                // Remove old title reference
+                movies.remove(title);
                 break;
-
+//----------------------------------------------------------------------------------------------------------------------
             case "releaseyear":
                 try {
                     int newYear = Integer.parseInt(newValue);
@@ -74,7 +76,7 @@ public class MovieCollection {
                     return false;
                 }
                 break;
-
+//----------------------------------------------------------------------------------------------------------------------
             case "genre":
                 if (!newValue.matches("^[a-zA-Z ]+$") || newValue.length() < 3 || newValue.length() > 20) {
                     System.out.println("Error: Genre must contain only letters and be 3-20 characters long.");
@@ -82,15 +84,23 @@ public class MovieCollection {
                 }
                 movie.setGenre(newValue);
                 break;
-
+//----------------------------------------------------------------------------------------------------------------------
             case "director":
-                while (!newValue.matches("^[a-zA-Z ]+$") || newValue.length() < 2 || newValue.length() > 25) {
-                    System.out.println("Error: Director name must contain only letters and be 2-25 characters long.");
-                    return false;
+                // Loop until the director name is valid
+                while (true) {
+                    if (!newValue.matches("^[a-zA-Z ]+$") || newValue.length() < 2 || newValue.length() > 25) {
+                        System.out.println("Error: Director name must contain only letters and be 2-25 characters long.");
+                        // Allow retry by prompting for the new value again (this could come from user input instead of already provided newValue)
+                        // If you want to collect input from the user, this is where you'd add the prompt and input reading logic.
+                        return false; // or continue to prompt as necessary
+                    } else {
+                        movie.setDirector(newValue);
+                        break;  // Exit the loop when valid director name is entered
+                    }
                 }
-                movie.setDirector(newValue);
                 break;
-
+//----------------------------------------------------------------------------------------------------------------------
+            //Only allow the integer to be inputted within the range
             case "rating":
                 try {
                     float newRating = Float.parseFloat(newValue);
@@ -104,7 +114,8 @@ public class MovieCollection {
                     return false;
                 }
                 break;
-
+//----------------------------------------------------------------------------------------------------------------------
+            //Important to focus on constraints after functionality
             case "watchedstatus":
                 if (!newValue.equalsIgnoreCase("true") && !newValue.equalsIgnoreCase("false")) {
                     System.out.println("Error: Watched status must be 'true' or 'false'.");
@@ -112,17 +123,15 @@ public class MovieCollection {
                 }
                 movie.setWatched_Status(Boolean.parseBoolean(newValue));
                 break;
-
             default:
                 System.out.println("Error: Invalid field.");
                 return false;
         }
-
         System.out.println("Movie updated successfully.");
         return true;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
 //getMovie():List<Movie>
     public void Display_MovieCollection(){
         if (movies.isEmpty()) {
@@ -133,7 +142,7 @@ public class MovieCollection {
             }
         }
     }
-    //----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
     public float calculateAverageRating() {
         if (movies.isEmpty()) {
             System.out.println("No movies to calculate an average rating.");
@@ -146,15 +155,14 @@ public class MovieCollection {
         float average = sum / movies.size();
 
         // Format the average to 2 decimal places
-        DecimalFormat df = new DecimalFormat("#.00");
+        DecimalFormat df = new DecimalFormat("#.0");
         String formattedAverage = df.format(average);
 
         // Output the formatted average
         System.out.println("Average Movie Rating: " + formattedAverage);
         return Float.parseFloat(formattedAverage);
     }
-
-//----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
 //upload data through textfile
     public void addMoviesFromFile(String filePath) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
@@ -166,7 +174,7 @@ public class MovieCollection {
                     System.out.println("Skipping invalid line (wrong number of fields): " + line);
                     continue;
                 }
-
+                //Focus on the inputs from the textfile
                 String title = parts[0].trim();
                 String yearStr = parts[1].trim();
                 String genre = parts[2].trim();
@@ -223,7 +231,6 @@ public class MovieCollection {
                     System.out.println("Skipping invalid movie (invalid watched status): " + line);
                     continue;
                 }
-
                 boolean watched = Boolean.parseBoolean(watchedStr);
 
                 // Add movie to collection
@@ -234,7 +241,7 @@ public class MovieCollection {
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
-//----------------------------------------------------------------------------------------------------------------------
+//======================================================================================================================
 //Menu
 //This method displays a menu that allows the user to interact with the system.
     public void Movie_Menu () {
@@ -251,17 +258,23 @@ public class MovieCollection {
             System.out.println("5. Calculate Average Movie Rating");
             System.out.println("6. Exit Menu");
             System.out.print("Enter your option by the number associated: ");
-            // Option = sc.nextInt();
-            // System.out.print("\n");
 
-            //Will be used to validate user input for the menu
-            while (!sc.hasNextInt()) {
-                System.out.println("\nInvalid input. Please enter a number between 1 and 6.");
-                sc.next(); // Clear the invalid input
-                System.out.print("Enter your option: ");
+            while (true) {
+                // Check if the input is an integer
+                if (!sc.hasNextInt()) {
+                    System.out.println("\nInvalid input. Please enter a number between 1 and 6.");
+                    sc.next(); // Clear the invalid input
+                } else {
+                    Option = sc.nextInt(); // Read the input
+
+                    // Check if the input is within the valid range (1 or 2)
+                    if (Option >= 1 && Option <= 6) {
+                        break;  // Exit the loop if valid input is entered
+                    } else {
+                        System.out.println("Invalid option. Please enter a number between 1 and 2.");
+                    }
+                }
             }
-            Option = sc.nextInt();
-            System.out.print("\n");
 
 //Using the switch for the menu so user can enter the option they choose by using the number associated in  the print
 // above.
@@ -272,23 +285,30 @@ public class MovieCollection {
                     //add the switch option for add movie manually or by text file
                     //Asking for manual  or text file option(letters failed, numbers failed, special failed)
                     System.out.println("How would you like to add the Movie");
-                    System.out.println("1. Textfile (Please place textfile in (C:) for data retrival.");
+                    System.out.println("1. Textfile");
                     System.out.println("2. Manually");
                     System.out.print("Enter Option Here:");
                     int option2 ;//= sc.nextInt();
 
-                    //Reuse the same user validation from earlier
-                    while (!sc.hasNextInt()) {
-                        System.out.println("\nInvalid input. Please enter a number between 1 and 2.");
-                        sc.next(); // Clear the invalid input
-                        System.out.print("Enter your option: ");
+                    while (true) {
+                        // Check if the input is an integer
+                        if (!sc.hasNextInt()) {
+                            System.out.println("Invalid input. Please enter a number between 1 and 2.");
+                            sc.next(); // Clear the invalid input
+                        } else {
+                            option2 = sc.nextInt(); // Read the input
+
+                            // Check if the input is within the valid range (1 or 2)
+                            if (option2 >= 1 && option2 <= 2) {
+                                break;  // Exit the loop if valid input is entered
+                            } else {
+                                System.out.println("Invalid option. Please enter a number between 1 and 2.");
+                            }
+                        }
                     }
-                    option2 = sc.nextInt();
-                    System.out.print("\n");
-
                     switch (option2) {
-
-                        //textfile option
+//**********************************************************************************************************************
+                        //--textfile option
                         case 1:
                             //•	Never hardcode the file path the user must enter for the text file.  Always let the user enter the complete path.
                             System.out.print("Enter the full file path for the movies text file: ");
@@ -301,14 +321,12 @@ public class MovieCollection {
                                 System.out.print("Enter the full file path for the movies text file: ");
                                 filePath = sc.nextLine();
                             }
-
                             addMoviesFromFile(filePath);
                             break;
-
-                        //manually
+//**********************************************************************************************************************
+                        //--manually
                         case 2:
 //keep movie titles under 45 letters or no charString filePath = "C:\\movies.txt";
-//                            addMoviesFromFile(filePath);acters make sure to allow re-entry
                             System.out.print("Enter Movie Title: ");
                             sc.nextLine();
                             String title = sc.nextLine();
@@ -346,14 +364,12 @@ public class MovieCollection {
 
 //only specific genre words in make sure to allow re-entry
                             String[] validGenres = {"Action", "Crime", "Drama", "Fantasy", "Horror", "Comedy", "Romance", "Science Fiction", "Sports", "Thriller", "Mystery", "War", "Western"};
-
                             // Get the genre input and validate
                             String genre;
                             boolean validGenre = false;
                             do {
                                 System.out.print("Enter genre: ");
                                 genre = sc.nextLine();
-
                                 // Check if the genre is valid
                                 for (String valid : validGenres) {
                                     if (genre.equalsIgnoreCase(valid)) {
@@ -361,7 +377,6 @@ public class MovieCollection {
                                         break;
                                     }
                                 }
-
                                 // If the genre is invalid, prompt the user to enter again
                                 if (!validGenre) {
                                     System.out.println("Error: Invalid genre. Please enter a valid genre from the list: Action, Crime, Drama, Fantasy, Horror, Comedy, Romance, Science Fiction, Sports, Thriller, Mystery, War, Western.");
@@ -369,8 +384,6 @@ public class MovieCollection {
                             } while (!validGenre);
 
 //keep up from 2 to 25 characters make sure to allow re-entry
-                            //o	Director(letters passed, numbers failed, specials failed)
-                            // no special letters for name
                             System.out.print("Enter director: ");
                             String director = sc.nextLine();
 
@@ -438,6 +451,7 @@ public class MovieCollection {
 //----------------------------------------------------------------------------------------------------------------------
                 //Removing movie
                 case 2:
+                    //the movie will be checked from the method associated
                     System.out.print("Enter title to remove: ");
                     sc.nextLine();
                     String remove_title = sc.nextLine();
@@ -446,8 +460,6 @@ public class MovieCollection {
 //----------------------------------------------------------------------------------------------------------------------
                 //Update Movie Collection
                 case 3:
-
-                    // Update Movie Collection
                     sc.nextLine(); // Clear the buffer before getting new input
                     // Enter the title of the movie to update
                     System.out.print("Enter title of the movie to update: ");
@@ -468,6 +480,7 @@ public class MovieCollection {
                     boolean validUpdate = false;
 
                     switch (field.toLowerCase()) {
+//**********************************************************************************************************************
                         case "title":
                             // Keep movie titles under 45 characters
                             while (true) {
@@ -483,7 +496,7 @@ public class MovieCollection {
                                 }
                             }
                             break;
-
+//**********************************************************************************************************************
                         case "releaseyear":
                             // Allow movies from 1900 to 2025
                             while (true) {
@@ -502,7 +515,7 @@ public class MovieCollection {
                                 }
                             }
                             break;
-
+//**********************************************************************************************************************
                         //use different variables for this case
                         case "genre":
                             // Only specific genre words are allowed
@@ -525,23 +538,27 @@ public class MovieCollection {
                                 }
                             }
                             break;
-
+//**********************************************************************************************************************
                         case "director":
-                            // Director name should be between 2 and 25 characters
+                            // Loop until a valid director name is entered
                             while (true) {
                                 System.out.print("Enter new director's name (2-25 characters): ");
-                                newValue = sc.nextLine().trim();
+                                newValue = sc.nextLine().trim();  // Read input and remove leading/trailing spaces
+
+                                // Check if the input is valid
                                 if (newValue.length() < 2) {
                                     System.out.println("Error: Name entered was below 2 characters, please re-enter.");
                                 } else if (newValue.length() > 25) {
                                     System.out.println("Error: Name entered was above 25 characters, please re-enter.");
+                                } else if (!newValue.matches("^[a-zA-Z ]+$")) {  // Ensure the name contains only letters and spaces
+                                    System.out.println("Error: Director name must contain only letters and spaces.");
                                 } else {
-                                    validUpdate = true;
-                                    break;
+                                    validUpdate = true;  // Mark the input as valid
+                                    break;  // Exit the loop when valid input is entered
                                 }
                             }
                             break;
-
+//**********************************************************************************************************************
                         case "rating":
                             // Rating should be between 0 and 100
                             while (true) {
@@ -560,7 +577,7 @@ public class MovieCollection {
                                 }
                             }
                             break;
-
+//**********************************************************************************************************************
                         case "watchedstatus":
                             // Watched status should be 'true' or 'false'
                             while (true) {
@@ -615,5 +632,5 @@ public class MovieCollection {
                     System.out.println("Invalid option, please re-enter the option offered above.");
             }
         } while (Option != 6);
-    }//class
-}
+    }//menu method
+}//class
