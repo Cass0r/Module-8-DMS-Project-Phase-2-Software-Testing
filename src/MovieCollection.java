@@ -11,11 +11,19 @@ import java.text.DecimalFormat;
 
 public class MovieCollection {
 
-    private Map<String,Movie> movies;
+    //private Map<String,Movie> movies;
+    //made public for the unit testing
+    public Map<String,Movie> movies;
 
     public MovieCollection(){
         movies = new HashMap<>();
     }
+
+    //used for unit testing
+    public Movie getMovie(String title) {
+        return movies.get(title);
+    }
+
 //======================================================================================================================
 //addMovie(movie: Movie): boolean
     public  boolean addMovie(Movie movie){
@@ -78,8 +86,16 @@ public class MovieCollection {
                 break;
 //----------------------------------------------------------------------------------------------------------------------
             case "genre":
-                if (!newValue.matches("^[a-zA-Z ]+$") || newValue.length() < 3 || newValue.length() > 20) {
-                    System.out.println("Error: Genre must contain only letters and be 3-20 characters long.");
+                String[] validGenres = {"Action", "Crime", "Drama", "Fantasy", "Horror", "Comedy", "Romance", "Science Fiction", "Sports", "Thriller", "Mystery", "War", "Western"};
+                boolean isValidGenre = false;
+                for (String genre : validGenres) {
+                    if (newValue.equalsIgnoreCase(genre)) {
+                        isValidGenre = true;
+                        break;
+                    }
+                }
+                if (!isValidGenre) {
+                    System.out.println("Error: Invalid genre.");
                     return false;
                 }
                 movie.setGenre(newValue);
@@ -165,6 +181,7 @@ public class MovieCollection {
 //======================================================================================================================
 //upload data through textfile
     public void addMoviesFromFile(String filePath) {
+
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -202,7 +219,18 @@ public class MovieCollection {
                 }
 
                 // Validate genre (only letters and spaces, 3-20 characters)
-                if (!genre.matches("^[a-zA-Z ]+$") || genre.length() < 3 || genre.length() > 20) {
+                String[] validGenres = {"Action", "Crime", "Drama", "Fantasy", "Horror", "Comedy", "Romance",
+                        "Science Fiction", "Sports", "Thriller", "Mystery", "War", "Western"};
+
+                boolean isValidGenre = false;
+                for (String validGenre : validGenres) {
+                    if (genre.equalsIgnoreCase(validGenre)) {
+                        isValidGenre = true;
+                        break;
+                    }
+                }
+
+                if (!isValidGenre) {
                     System.out.println("Skipping invalid movie (invalid genre): " + line);
                     continue;
                 }
